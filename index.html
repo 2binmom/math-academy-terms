@@ -77,19 +77,30 @@
   }
   .sec-hint{font-size:13px; color:var(--sub); margin:0 0 14px;}
 
-  .term-grid{display:flex; flex-wrap:wrap; gap:9px;}
-  .term-chip{
-    border:none; border-radius:999px; padding:11px 18px; font-size:16.5px; font-weight:700;
-    color:var(--ink); cursor:pointer; transition:transform .12s, box-shadow .12s;
-    box-shadow:0 2px 6px rgba(58,42,51,0.08);
+  .term-list{display:flex; flex-direction:column; gap:8px;}
+  .term-item{border-radius:14px; overflow:hidden; box-shadow:0 2px 6px rgba(58,42,51,0.08); scroll-margin:16px;}
+  .term-row{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    border:none; cursor:pointer; padding:14px 18px; font-size:16.5px; font-weight:700;
+    color:var(--ink); text-align:left; transition:filter .12s;
   }
-  .term-chip:hover{transform:translateY(-1px); box-shadow:0 4px 12px rgba(58,42,51,0.14);}
-  .term-chip:active{transform:translateY(0);}
-  .term-chip.c0{background:#FFE9A8;}
-  .term-chip.c1{background:#FFCFA1;}
-  .term-chip.c2{background:#C6EEC2;}
-  .term-chip.c3{background:#B9E8EA;}
-  .term-chip.c4{background:#E3CCF4;}
+  .term-row:active{filter:brightness(0.97);}
+  .term-row-chevron{font-size:12px; flex:0 0 auto; transition:transform .2s;}
+  .term-item.open .term-row-chevron{transform:rotate(180deg);}
+  .term-item.c0 .term-row{background:#FFE9A8;}
+  .term-item.c1 .term-row{background:#FFCFA1;}
+  .term-item.c2 .term-row{background:#C6EEC2;}
+  .term-item.c3 .term-row{background:#B9E8EA;}
+  .term-item.c4 .term-row{background:#E3CCF4;}
+  .term-row-panel{display:grid; grid-template-rows:0fr; transition:grid-template-rows .25s ease; background:#fff;}
+  .term-item.open .term-row-panel{grid-template-rows:1fr;}
+  .term-row-panel-inner{overflow:hidden; min-height:0;}
+  .term-row-def{margin:0; padding:14px 18px 6px; font-size:16.5px; color:#5A4650; line-height:1.75;}
+  .term-back-btn{
+    display:inline-flex; align-items:center; gap:4px; margin:0 18px 14px;
+    border:none; background:var(--pink-bg); color:var(--pink-deep); font-weight:700;
+    font-size:13px; padding:7px 14px; border-radius:999px; cursor:pointer;
+  }
 
   .table-scroll-wrap{overflow-x:auto; border-radius:var(--radius); box-shadow:var(--shadow); -webkit-overflow-scrolling:touch;}
   table.cmp{border-collapse:collapse; width:100%; min-width:620px; background:var(--card); font-size:13.5px;}
@@ -109,25 +120,6 @@
   .term:hover{color:var(--pink);}
 
   .foot-note{font-size:12px; color:var(--sub); margin:10px 2px 0; line-height:1.6;}
-
-  .term-modal-backdrop{
-    position:fixed; inset:0; background:rgba(58,42,51,0.45); display:none;
-    align-items:center; justify-content:center; padding:20px; z-index:100;
-  }
-  .term-modal-backdrop.open{display:flex;}
-  .term-modal{
-    background:#fff; border-radius:20px; padding:26px 24px 24px; max-width:360px; width:100%;
-    box-shadow:0 12px 40px rgba(58,42,51,0.25); position:relative; text-align:center;
-  }
-  .term-modal-close{
-    position:absolute; top:12px; right:12px; border:none; background:var(--pink-bg); color:var(--pink-deep);
-    width:28px; height:28px; border-radius:50%; font-size:14px; cursor:pointer; line-height:1;
-  }
-  .term-modal-word{
-    font-family:'Jalnan',-apple-system,sans-serif; font-weight:normal; font-size:22px;
-    color:var(--pink-deep); margin-bottom:12px;
-  }
-  .term-modal-def{font-size:16.5px; color:var(--ink); line-height:1.75;}
 
   footer{
     text-align:center; padding:36px 18px 50px; color:var(--sub); font-size:12.5px;
@@ -163,8 +155,8 @@
 
   <section class="block">
     <p class="sec-title">1️⃣ 헷갈리는 수학 용어 10가지</p>
-    <p class="sec-hint">👆 눌러보시면 뜻이 바로 나와요</p>
-    <div class="term-grid" id="termGrid"></div>
+    <p class="sec-hint">👆 눌러보시면 뜻이 바로 펼쳐져요</p>
+    <div class="term-list" id="termGrid"></div>
   </section>
 
   <section class="block">
@@ -185,11 +177,11 @@
         <tbody>
           <tr>
             <th>수업 방향</th>
-            <td><span class="term" onclick="openTerm('교과수학')">교과</span> <span class="term" onclick="openTerm('선행')">선행</span>·<span class="term" onclick="openTerm('심화')">심화</span></td>
-            <td><span class="term" onclick="openTerm('사고력수학')">사고력</span></td>
-            <td><span class="term" onclick="openTerm('심화')">심화</span> <span class="term" onclick="openTerm('사고력수학')">사고력</span></td>
+            <td><span class="term" onclick="openFromTable('교과수학')">교과</span> <span class="term" onclick="openFromTable('선행')">선행</span>·<span class="term" onclick="openFromTable('심화')">심화</span></td>
+            <td><span class="term" onclick="openFromTable('사고력수학')">사고력</span></td>
+            <td><span class="term" onclick="openFromTable('심화')">심화</span> <span class="term" onclick="openFromTable('사고력수학')">사고력</span></td>
             <td>탐구·교구 중심</td>
-            <td><span class="term" onclick="openTerm('사고력수학')">사고력</span></td>
+            <td><span class="term" onclick="openFromTable('사고력수학')">사고력</span></td>
           </tr>
           <tr>
             <th>모집 연령·학년</th>
@@ -203,7 +195,7 @@
             <th>참고 사항</th>
             <td>레벨 세분화</td>
             <td>과정별 단계 구성</td>
-            <td><span class="term" onclick="openTerm('레테')">반편성 테스트</span></td>
+            <td><span class="term" onclick="openFromTable('레테')">반편성 테스트</span></td>
             <td>대형 체인</td>
             <td>자체 교재</td>
           </tr>
@@ -219,14 +211,6 @@
   <div style="margin-top:9px;">© 2026 투빈맘 · <a href="https://www.instagram.com/2bin_mom/?hl=ko" target="_blank" rel="noopener">@2bin_mom</a></div>
 </footer>
 
-<div class="term-modal-backdrop" id="termBackdrop" onclick="closeTermModal()">
-  <div class="term-modal" onclick="event.stopPropagation()">
-    <button type="button" class="term-modal-close" onclick="closeTermModal()">✕</button>
-    <div class="term-modal-word" id="termModalWord"></div>
-    <div class="term-modal-def" id="termModalDef"></div>
-  </div>
-</div>
-
 <script>
 const GLOSSARY = {
   '사고력수학': '탐구·추론으로 생각하는 힘을 기르는 학습',
@@ -241,28 +225,61 @@ const GLOSSARY = {
   '단원평가': '한 단원에서 배운 내용을 얼마나 이해했는지 확인하는 평가',
 };
 
-function renderTermGrid(){
-  const grid = document.getElementById('termGrid');
-  grid.innerHTML = Object.keys(GLOSSARY).map((term, i) =>
-    `<button type="button" class="term-chip c${i % 5}" onclick="openTerm('${term}')">${term}</button>`
+function renderTermList(){
+  const list = document.getElementById('termGrid');
+  list.innerHTML = Object.keys(GLOSSARY).map((term, i) => `
+    <div class="term-item c${i % 5}" id="term-item-${term}">
+      <button type="button" class="term-row" onclick="toggleTerm('${term}')">
+        <span>${term}</span>
+        <span class="term-row-chevron">▾</span>
+      </button>
+      <div class="term-row-panel">
+        <div class="term-row-panel-inner">
+          <p class="term-row-def">${GLOSSARY[term]}</p>
+          <button type="button" class="term-back-btn" id="back-btn-${term}" style="display:none;" onclick="backToTable()">↓ 표로 돌아가기</button>
+        </div>
+      </div>
+    </div>`
   ).join('');
 }
 
-function openTerm(term){
-  const def = GLOSSARY[term];
-  if (!def) return;
-  document.getElementById('termModalWord').textContent = term;
-  document.getElementById('termModalDef').textContent = def;
-  document.getElementById('termBackdrop').classList.add('open');
+let openTermKey = null;
+let tableReturnY = null;
+
+function closeOpenTerm(){
+  if (!openTermKey) return;
+  const item = document.getElementById('term-item-' + openTermKey);
+  if (item) item.classList.remove('open');
+  const backBtn = document.getElementById('back-btn-' + openTermKey);
+  if (backBtn) backBtn.style.display = 'none';
+  openTermKey = null;
 }
 
-function closeTermModal(){
-  document.getElementById('termBackdrop').classList.remove('open');
+function toggleTerm(term){
+  const wasOpen = openTermKey === term;
+  closeOpenTerm();
+  if (wasOpen) return;
+  const item = document.getElementById('term-item-' + term);
+  if (!item) return;
+  item.classList.add('open');
+  openTermKey = term;
 }
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeTermModal();
-});
+function openFromTable(term){
+  tableReturnY = window.scrollY;
+  closeOpenTerm();
+  const item = document.getElementById('term-item-' + term);
+  if (!item) return;
+  item.classList.add('open');
+  openTermKey = term;
+  const backBtn = document.getElementById('back-btn-' + term);
+  if (backBtn) backBtn.style.display = 'inline-flex';
+  item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function backToTable(){
+  if (tableReturnY != null) window.scrollTo({ top: tableReturnY, behavior: 'smooth' });
+}
 
 function shareKakao(btn){
   const url = location.href;
@@ -279,7 +296,7 @@ function shareKakao(btn){
   btn._timer = setTimeout(() => { btn.classList.remove("copied"); btn.textContent = "💬 카톡으로 공유"; }, ok ? 1800 : 4000);
 }
 
-renderTermGrid();
+renderTermList();
 </script>
 </body>
 </html>
